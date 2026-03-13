@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rosary Bio2.0 | R&D Hardware Lab</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #0a0a0a;
+            --panel-bg: #1a1a1a;
+            --primary: #D4AF37; /* Rosary Gold */
+            --accent: #00d2ff;  /* Tech Blue */
+            --text-main: #eee;
+            --text-muted: #888;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 2px solid #333;
+            margin-bottom: 40px;
+        }
+
+        h1 { font-family: 'Playfair Display', serif; color: var(--primary); font-size: 2.5em; margin: 0; }
+        .subtitle { color: var(--accent); font-family: 'Share Tech Mono', monospace; margin-top: 10px; font-size: 1.1em; letter-spacing: 1px; }
+
+        .dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard { grid-template-columns: 1fr; }
+        }
+
+        /* Control Panel */
+        .controls {
+            background: var(--panel-bg);
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .controls h2 { margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 10px; font-size: 1.5em; }
+
+        .slider-container { margin: 30px 0; }
+        .slider-label { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 10px; }
+        .data-readout { font-family: 'Share Tech Mono', monospace; color: var(--accent); font-size: 1.2em; }
+        
+        input[type=range] { width: 100%; cursor: pointer; accent-color: var(--primary); }
+
+        .preset-buttons { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .btn {
+            background: #2a2a2a; color: #fff; border: 1px solid #444; padding: 10px;
+            border-radius: 6px; cursor: pointer; transition: all 0.2s;
+            font-family: 'Share Tech Mono', monospace; text-transform: uppercase;
+        }
+        .btn:hover, .btn.active { background: var(--primary); color: #000; border-color: var(--primary); }
+
+        .tech-specs {
+            margin-top: 30px; padding: 15px; background: #000; border-radius: 6px;
+            font-family: 'Share Tech Mono', monospace; font-size: 0.9em; color: #aaa;
+        }
+        .tech-specs span { color: #fff; }
+
+        /* Canvas Displays */
+        .visualizer {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .visualizer { grid-template-columns: 1fr; }
+        }
+
+        .canvas-box {
+            background: var(--panel-bg);
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        .canvas-box h3 { margin-top: 0; color: #ccc; font-size: 1.1em; letter-spacing: 1px; }
+        canvas {
+            background: #fff; /* White background to match the Python CV2 output */
+            border-radius: 8px;
+            max-width: 100%;
+            height: auto;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .investor-note {
+            grid-column: 1 / -1;
+            margin-top: 30px; padding: 20px; border-left: 4px solid var(--primary);
+            background: rgba(212, 175, 55, 0.1); line-height: 1.6;
+        }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Rosary Hardware & R&D Lab</h1>
+    <div class="subtitle">SYS.LOG: Adaptive Drip Irrigation GenCAD Matrix</div>
+</header>
+
+<div class="dashboard">
+    
+    <div class="controls">
+        <h2>🌍 Gravity Engine</h2>
+        <p style="color: var(--text-muted); font-size: 0.95em;">
+            Passe die Umweltbedingungen an. Geringere Gravitation reduziert den hydrostatischen Druck und zwingt das GenCAD-System, die Tropfenauslässe zu vergrößern.
+        </p>
+
+        <div class="slider-container">
+            <div class="slider-label">
+                <span>Ziel-Gravitation:</span>
+                <span class="data-readout" id="gravityValue">9.81 m/s²</span>
+            </div>
+            <input type="range" id="gravitySlider" min="1.0" max="15.0" step="0.01" value="9.81">
+        </div>
+
+        <div class="preset-buttons">
+            <button class="btn active" onclick="setGravity(9.81, this)">Earth</button>
+            <button class="btn" onclick="setGravity(3.72, this)">Mars</button>
+            <button class="btn" onclick="setGravity(1.62, this)">Moon</button>
+        </div>
+
+        <div class="tech-specs">
+            > DYNAMIC_SCALE_FACTOR: <span id="scaleFactorValue">1.00</span><br>
+            > EMITTER_WIDTH (px): <span id="emitterValue">10</span><br>
+            > SYSTEM_STATUS: <span style="color: #0f0;">NOMINAL</span>
+        </div>
+    </div>
+
+    <div class="visualizer">
+        <div class="canvas-box">
+            <h3>Pipe Cross-Section</h3>
+            <canvas id="pipeCanvas" width="400" height="400"></canvas>
+        </div>
+        <div class="canvas-box">
+            <h3>Flexible Bio-Scaffold</h3>
+            <canvas id="scaffoldCanvas" width="400" height="400"></canvas>
+        </div>
+        
+        <div class="investor-note">
+            <strong>🚀 Investor Target: Extreme Environments</strong><br>
+            Unser adaptives Rosary Hügelbeet-System ist nicht nur für die Erde konzipiert. Die prozedurale GenCAD-Architektur skaliert die Hardware (Rohrprofile und Bio-Matrix) automatisch anhand physikalischer Konstanten. Ob Aquafarming im Amazonas, Mammutbäume auf der Hochalb oder geschlossene Habitate auf dem Mars – die Form folgt der Physik.
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- Setup Canvas ---
+    const pipeCanvas = document.getElementById('pipeCanvas');
+    const pipeCtx = pipeCanvas.getContext('2d');
+    
+    const scaffoldCanvas = document.getElementById('scaffoldCanvas');
+    const scaffoldCtx = scaffoldCanvas.getContext('2d');
+
+    const canvasSize = 400;
+    const center = canvasSize / 2;
+
+    // --- Physics Parameters ---
+    const gravityEarth = 9.81;
+    let targetGravity = 9.81;
+    const baseEmitterWidth = 10; // Base half-width at Earth gravity
+
+    // Geometry
+    const outerRadius = 160;
+    const innerRadius = 120; // 40px pipe wall
+
+    // --- Elements ---
+    const slider = document.getElementById('gravitySlider');
+    const gravDisplay = document.getElementById('gravityValue');
+    const scaleDisplay = document.getElementById('scaleFactorValue');
+    const emitterDisplay = document.getElementById('emitterValue');
+    const buttons = document.querySelectorAll('.btn');
+
+    // --- Drawing Functions ---
+    function drawGenCAD() {
+        // Calculate physics
+        const scaleFactor = gravityEarth / targetGravity;
+        const dynamicEmitterWidth = baseEmitterWidth * scaleFactor;
+
+        // Update UI Text
+        gravDisplay.innerText = targetGravity.toFixed(2) + " m/s²";
+        scaleDisplay.innerText = scaleFactor.toFixed(2);
+        emitterDisplay.innerText = Math.round(dynamicEmitterWidth * 2); // Show total width
+
+        // 1. Draw Pipe
+        pipeCtx.clearRect(0, 0, canvasSize, canvasSize);
+        
+        // Background white (like CV2)
+        pipeCtx.fillStyle = '#ffffff';
+        pipeCtx.fillRect(0, 0, canvasSize, canvasSize);
+
+        // Draw solid pipe (Black)
+        pipeCtx.fillStyle = '#111';
+        pipeCtx.beginPath();
+        pipeCtx.arc(center, center, outerRadius, 0, Math.PI * 2);
+        pipeCtx.fill();
+
+        // Use composite operation to "cut out" holes
+        pipeCtx.globalCompositeOperation = 'destination-out';
+
+        // Cut inner hole
+        pipeCtx.beginPath();
+        pipeCtx.arc(center, center, innerRadius, 0, Math.PI * 2);
+        pipeCtx.fill();
+
+        // Cut 4 Emitters (Cross shape)
+        // Top & Bottom
+        pipeCtx.fillRect(center - dynamicEmitterWidth, 0, dynamicEmitterWidth * 2, canvasSize);
+        // Left & Right
+        pipeCtx.fillRect(0, center - dynamicEmitterWidth, canvasSize, dynamicEmitterWidth * 2);
+
+        // Reset composite
+        pipeCtx.globalCompositeOperation = 'source-over';
+
+        // 2. Draw Bio-Scaffold Matrix
+        scaffoldCtx.clearRect(0, 0, canvasSize, canvasSize);
+        
+        // Background white
+        scaffoldCtx.fillStyle = '#ffffff';
+        scaffoldCtx.fillRect(0, 0, canvasSize, canvasSize);
+
+        // Draw grid
+        scaffoldCtx.strokeStyle = '#333';
+        scaffoldCtx.lineWidth = 6;
+        const gridSpacing = 40;
+
+        scaffoldCtx.beginPath();
+        for (let x = 0; x <= canvasSize; x += gridSpacing) {
+            scaffoldCtx.moveTo(x, 0);
+            scaffoldCtx.lineTo(x, canvasSize);
+        }
+        for (let y = 0; y <= canvasSize; y += gridSpacing) {
+            scaffoldCtx.moveTo(0, y);
+            scaffoldCtx.lineTo(canvasSize, y);
+        }
+        scaffoldCtx.stroke();
+
+        // Cut central hole for pipe
+        scaffoldCtx.globalCompositeOperation = 'destination-out';
+        scaffoldCtx.beginPath();
+        scaffoldCtx.arc(center, center, outerRadius + 8, 0, Math.PI * 2);
+        scaffoldCtx.fill();
+        
+        // Draw white circle to make it look clean (Optional, destination-out does this)
+        scaffoldCtx.globalCompositeOperation = 'source-over';
+    }
+
+    // --- Interactions ---
+    slider.addEventListener('input', function() {
+        targetGravity = parseFloat(this.value);
+        // Remove active class from buttons when manually sliding
+        buttons.forEach(b => b.classList.remove('active'));
+        drawGenCAD();
+    });
+
+    function setGravity(value, btnElement) {
+        targetGravity = value;
+        slider.value = value;
+        
+        // Update active button
+        buttons.forEach(b => b.classList.remove('active'));
+        btnElement.classList.add('active');
+        
+        drawGenCAD();
+    }
+
+    // Initial Draw
+    drawGenCAD();
+
+</script>
+
+</body>
+</html>
