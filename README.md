@@ -1,2 +1,1 @@
-# .github.io
-kraken cryoto card mit Gesellschaftervertrag RosaryParish Holding (White Paper plus ROI
+👉 [Testen Sie unseren interaktiven Hardware-Simulator live](https://rosary-mom.github.io/rnd-lab.html)
